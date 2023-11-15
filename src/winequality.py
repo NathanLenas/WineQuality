@@ -21,21 +21,20 @@ class Wine(BaseModel):
     alcohol: float
     quality: Optional[int] = -1
 
-class test(BaseModel):
-    id:int
-
 app = FastAPI()
 
 
 
 @app.get("/api/model/")
 def getSerializedModel():
-    return {"model": "modeldata"}
+    return {"model" : m.getModel().to_json()}
+    
 
 
 @app.get('/api/model/description')
 def getModelInfos():
-    return {"model" : [{"parameters" : [{"name": "id", "type": "int"}, {"name": "fixed_acidity", "type": "float"}, {"name": "volatile_acidity", "type": "float"}, {"name": "citric_acid", "type": "float"}, {"name": "residual_sugar", "type": "float"}, {"name": "chlorides", "type": "float"}, {"name": "free_sulfur_dioxide", "type": "float"}, {"name": "total_sulfur_dioxide", "type": "float"}, {"name": "density", "type": "float"}, {"name": "pH", "type": "float"}, {"name": "sulphates", "type": "float"}, {"name": "alcohol", "type": "float"}, {"name": "quality", "type": "int"}] }] }
+    return {"model" : [{"parameters" : [{"name": "id", "type": "int"}, {"name": "fixed_acidity", "type": "float"}, {"name": "volatile_acidity", "type": "float"}, {"name": "citric_acid", "type": "float"}, {"name": "residual_sugar", "type": "float"}, {"name": "chlorides", "type": "float"}, {"name": "free_sulfur_dioxide", "type": "float"}, {"name": "total_sulfur_dioxide", "type": "float"}, {"name": "density", "type": "float"}, {"name": "pH", "type": "float"}, {"name": "sulphates", "type": "float"}, {"name": "alcohol", "type": "float"}, {"name": "quality", "type": "int"} ]
+                        }], "summary": [m.description()] }
 
 @app.put('/api/model/')
 def addEntry(wine: Wine):
@@ -66,6 +65,22 @@ def predict(wine: Wine):
 
 @app.get("/api/model/predict")
 def getVinParfait():
-    #Todo: get properties of perfect wine
+    p = m.parfait()
     
-    return {"quality" : 10}
+    wine_array = p 
+
+    wine = Wine(
+        fixed_acidity=wine_array[0],
+        volatile_acidity=wine_array[1],
+        citric_acid=wine_array[2],
+        residual_sugar=wine_array[3],
+        chlorides=wine_array[4],
+        free_sulfur_dioxide=wine_array[5],
+        total_sulfur_dioxide=wine_array[6],
+        density=wine_array[7],
+        ph=wine_array[8],
+        sulphates=wine_array[9],
+        alcohol=wine_array[10],
+    )
+    
+    return wine
